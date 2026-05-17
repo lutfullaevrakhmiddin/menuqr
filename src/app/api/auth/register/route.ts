@@ -37,7 +37,7 @@ export async function POST(request: Request) {
 
     const slug = nanoid(10).toLowerCase()
 
-    const [user, restaurant] = await prisma.$transaction(async (tx) => {
+    const [user, restaurant] = await prisma.$transaction(async (tx: any) => {
       const newUser = await tx.user.create({
         data: { name, email, passwordHash },
       })
