@@ -100,7 +100,7 @@ export default async function MenuPage({
       id: cat.id,
       name: cat.name,
       sortOrder: cat.sortOrder,
-      menuItems: cat.menuItems.map((item) => ({
+      menuItems: cat.menuItems.map((item: any) => ({
         id: item.id,
         name: item.name,
         description: item.description,
