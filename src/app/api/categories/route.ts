@@ -8,6 +8,11 @@ const createCategorySchema = z.object({
   sortOrder: z.number().int().optional(),
 })
 
+const patchCategorySchema = z.object({
+  name: z.string().min(1).max(100).optional(),
+  sortOrder: z.number().int().optional(),
+})
+
 async function getPayload() {
   const cookieStore = await cookies()
   const token = cookieStore.get('token')?.value
@@ -28,6 +33,37 @@ export async function GET() {
   })
 
   return Response.json({ success: true, categories })
+}
+
+export async function PATCH(request: Request) {
+  const payload = await getPayload()
+  if (!payload) return Response.json({ error: 'Unauthorized' }, { status: 401 })
+
+  const { searchParams } = new URL(request.url)
+  const id = searchParams.get('id')
+  if (!id) return Response.json({ success: false, error: 'id kerak' }, { status: 400 })
+
+  try {
+    const existing = await prisma.category.findFirst({
+      where: { id, restaurantId: payload.restaurantId },
+    })
+    if (!existing) return Response.json({ success: false, error: 'Kategoriya topilmadi' }, { status: 404 })
+
+    const body = await request.json()
+    const parsed = patchCategorySchema.safeParse(body)
+    if (!parsed.success) return Response.json({ success: false, error: parsed.error.issues }, { status: 400 })
+
+    const category = await prisma.category.update({
+      where: { id },
+      data: parsed.data,
+      select: { id: true, name: true, sortOrder: true, isActive: true },
+    })
+
+    return Response.json({ success: true, category })
+  } catch (error) {
+    console.error('[categories PATCH]', error)
+    return Response.json({ success: false, error: 'Server xatosi' }, { status: 500 })
+  }
 }
 
 export async function POST(request: Request) {

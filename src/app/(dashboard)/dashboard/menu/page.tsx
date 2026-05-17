@@ -1,114 +1,240 @@
-"use client"
-import { useEffect, useState, useMemo } from 'react'
-import { useRouter } from 'next/navigation'
+"use client";
+import { useEffect, useState, useMemo, useRef } from "react";
+import { useRouter } from "next/navigation";
 
 type Category = {
-  id: string
-  name: string
-  sortOrder: number
-  isActive: boolean
-}
+  id: string;
+  name: string;
+  sortOrder: number;
+  isActive: boolean;
+};
 
 type MenuItem = {
-  id: string
-  name: string
-  description: string | null
-  price: string
-  imageUrl: string | null
-  isAvailable: boolean
-  sortOrder: number
-  category: { id: string; name: string }
-}
+  id: string;
+  name: string;
+  description: string | null;
+  price: string;
+  imageUrl: string | null;
+  isAvailable: boolean;
+  sortOrder: number;
+  category: { id: string; name: string };
+};
 
-const FOOD_EMOJI = ['🍕', '🍔', '🌮', '🍜', '🍣', '🥗', '🍖', '🥘', '🍲', '🥩', '🍗', '🥪']
+const FOOD_EMOJI = [
+  "🍕",
+  "🍔",
+  "🌮",
+  "🍜",
+  "🍣",
+  "🥗",
+  "🍖",
+  "🥘",
+  "🍲",
+  "🥩",
+  "🍗",
+  "🥪",
+];
 
 function emojiFor(name: string) {
-  let hash = 0
-  for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash)
-  return FOOD_EMOJI[Math.abs(hash) % FOOD_EMOJI.length]
+  let hash = 0;
+  for (let i = 0; i < name.length; i++)
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  return FOOD_EMOJI[Math.abs(hash) % FOOD_EMOJI.length];
+}
+
+// Format today's date in Uzbek
+function getUzDate() {
+  const d = new Date();
+  const days = [
+    "Yakshanba",
+    "Dushanba",
+    "Seshanba",
+    "Chorshanba",
+    "Payshanba",
+    "Juma",
+    "Shanba",
+  ];
+  const months = [
+    "Yanvar",
+    "Fevral",
+    "Mart",
+    "Aprel",
+    "May",
+    "Iyun",
+    "Iyul",
+    "Avgust",
+    "Sentabr",
+    "Oktabr",
+    "Noyabr",
+    "Dekabr",
+  ];
+  return `${days[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
 }
 
 export default function MenuPage() {
-  const router = useRouter()
-  const [categories, setCategories] = useState<Category[]>([])
-  const [menuItems, setMenuItems] = useState<MenuItem[]>([])
-  const [loading, setLoading] = useState(true)
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
-  const [search, setSearch] = useState('')
-  const [deletingId, setDeletingId] = useState<string | null>(null)
-  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
-  const [showAddCat, setShowAddCat] = useState(false)
-  const [newCatName, setNewCatName] = useState('')
-  const [addingCat, setAddingCat] = useState(false)
+  const router = useRouter();
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [showAddCat, setShowAddCat] = useState(false);
+  const [newCatName, setNewCatName] = useState("");
+  const [addingCat, setAddingCat] = useState(false);
+  const [userName, setUserName] = useState("");
+
+  // Inline category edit state
+  const [editingCatId, setEditingCatId] = useState<string | null>(null);
+  const [editingCatName, setEditingCatName] = useState("");
+  const [savingCatId, setSavingCatId] = useState<string | null>(null);
+  const [confirmDeleteCatId, setConfirmDeleteCatId] = useState<string | null>(
+    null,
+  );
+  const [deletingCatId, setDeletingCatId] = useState<string | null>(null);
+  const editCatInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     async function load() {
-      setLoading(true)
+      setLoading(true);
       try {
-        const [catRes, itemRes] = await Promise.all([
-          fetch('/api/categories'),
-          fetch('/api/menu-items'),
-        ])
-        const catData = await catRes.json()
-        const itemData = await itemRes.json()
-        if (catData.success) setCategories(catData.categories)
-        if (itemData.success) setMenuItems(itemData.menuItems)
+        const [catRes, itemRes, meRes] = await Promise.all([
+          fetch("/api/categories"),
+          fetch("/api/menu-items"),
+          fetch("/api/auth/me"),
+        ]);
+        const catData = await catRes.json();
+        const itemData = await itemRes.json();
+        const meData = await meRes.json();
+        if (catData.success) setCategories(catData.categories);
+        if (itemData.success) setMenuItems(itemData.menuItems);
+        if (meData.name) setUserName(meData.name);
       } catch (e) {
-        console.error(e)
+        console.error(e);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
     }
-    load()
-  }, [])
+    load();
+  }, []);
 
   const filtered = useMemo(() => {
-    return menuItems.filter(item => {
-      const matchCat = selectedCategory ? item.category.id === selectedCategory : true
+    return menuItems.filter((item) => {
+      const matchCat = selectedCategory
+        ? item.category.id === selectedCategory
+        : true;
       const matchSearch = search
         ? item.name.toLowerCase().includes(search.toLowerCase())
-        : true
-      return matchCat && matchSearch
-    })
-  }, [menuItems, selectedCategory, search])
+        : true;
+      return matchCat && matchSearch;
+    });
+  }, [menuItems, selectedCategory, search]);
 
   async function handleDelete(id: string) {
-    setDeletingId(id)
+    setDeletingId(id);
     try {
-      const res = await fetch(`/api/menu-items/${id}`, { method: 'DELETE' })
+      const res = await fetch(`/api/menu-items/${id}`, { method: "DELETE" });
       if (res.ok) {
-        setMenuItems(prev => prev.filter(i => i.id !== id))
-        setConfirmDeleteId(null)
+        setMenuItems((prev) => prev.filter((i) => i.id !== id));
+        setConfirmDeleteId(null);
       }
     } finally {
-      setDeletingId(null)
+      setDeletingId(null);
     }
   }
 
   async function handleAddCategory() {
-    if (!newCatName.trim()) return
-    setAddingCat(true)
+    if (!newCatName.trim()) return;
+    setAddingCat(true);
     try {
-      const res = await fetch('/api/categories', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/categories", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: newCatName.trim() }),
-      })
-      const data = await res.json()
+      });
+      const data = await res.json();
       if (data.success) {
-        setCategories(prev => [...prev, data.category])
-        setNewCatName('')
-        setShowAddCat(false)
+        setCategories((prev) => [...prev, data.category]);
+        setNewCatName("");
+        setShowAddCat(false);
       }
     } finally {
-      setAddingCat(false)
+      setAddingCat(false);
     }
   }
 
-  const catCount = (id: string) => menuItems.filter(i => i.category.id === id).length
+  function startEditCat(cat: Category) {
+    setEditingCatId(cat.id);
+    setEditingCatName(cat.name);
+    setConfirmDeleteCatId(null);
+    setTimeout(() => editCatInputRef.current?.select(), 30);
+  }
+
+  function cancelEditCat() {
+    setEditingCatId(null);
+    setEditingCatName("");
+  }
+
+  async function saveEditCat(id: string) {
+    const name = editingCatName.trim();
+    if (!name) return cancelEditCat();
+    setSavingCatId(id);
+    try {
+      const res = await fetch(`/api/categories/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setCategories((prev) =>
+          prev.map((c) =>
+            c.id === id ? { ...c, name: data.category.name } : c,
+          ),
+        );
+        setEditingCatId(null);
+      }
+    } finally {
+      setSavingCatId(null);
+    }
+  }
+
+  async function deleteCategory(id: string) {
+    setDeletingCatId(id);
+    try {
+      const res = await fetch(`/api/categories/${id}`, { method: "DELETE" });
+      const data = await res.json();
+      if (data.success) {
+        // "Boshqa" ga ko'chgan itemlarni kategoriya nomini yangilaymiz
+        const boshqaCat = categories.find(
+          (c) => c.name === "Boshqa" && c.id !== id,
+        );
+        setCategories((prev) => prev.filter((c) => c.id !== id));
+        if (boshqaCat) {
+          setMenuItems((prev) =>
+            prev.map((item) =>
+              item.category.id === id
+                ? { ...item, category: { id: boshqaCat.id, name: "Boshqa" } }
+                : item,
+            ),
+          );
+        }
+        if (selectedCategory === id) setSelectedCategory(null);
+      }
+    } finally {
+      setDeletingCatId(null);
+      setConfirmDeleteCatId(null);
+    }
+  }
+
+  const catCount = (id: string) =>
+    menuItems.filter((i) => i.category.id === id).length;
 
   return (
-    <div style={{ fontFamily: "'Cabinet Grotesk',sans-serif", color: '#f0eeff' }}>
+    <div
+      style={{ fontFamily: "'Cabinet Grotesk',sans-serif", color: "#f0eeff" }}
+    >
       <style>{`
         @keyframes fadeUp {
           from { opacity:0; transform:translateY(8px); }
@@ -156,15 +282,84 @@ export default function MenuPage() {
         }
         .cat-count {
           font-size: 11px;
+          min-width: 28px;
+          text-align: center;
           padding: 2px 7px;
           border-radius: 10px;
           background: rgba(255,255,255,.06);
           color: rgba(240,238,255,.35);
+          flex-shrink: 0;
         }
         .cat-item.active .cat-count {
           background: rgba(124,107,255,.2);
           color: #7c6bff;
         }
+
+        /* Pencil / trash icon buttons in category row */
+        .cat-edit-btn, .cat-del-btn {
+          background: none;
+          border: none;
+          padding: 2px 3px;
+          cursor: pointer;
+          border-radius: 4px;
+          display: flex;
+          align-items: center;
+          flex-shrink: 0;
+          transition: color .15s;
+        }
+        .cat-edit-btn { margin-left: 4px; color: rgba(240,238,255,.2); }
+        .cat-del-btn  { margin-left: 2px; color: rgba(240,238,255,.15); }
+        .cat-item.active .cat-edit-btn { color: #7c6bff; }
+        .cat-item.active .cat-del-btn  { color: rgba(255,80,80,.4); }
+        .cat-edit-btn:hover { color: rgba(240,238,255,.7) !important; }
+        .cat-del-btn:hover  { color: rgba(255,80,80,.85) !important; }
+
+        /* Inline edit input inside category row */
+        .cat-edit-input {
+          flex: 1;
+          min-width: 0;
+          background: rgba(124,107,255,.08);
+          border: 1px solid rgba(124,107,255,.35);
+          border-radius: 5px;
+          padding: 3px 7px;
+          color: #f0eeff;
+          font-size: 13px;
+          font-family: inherit;
+          outline: none;
+        }
+
+        /* Confirm-delete overlay inside sidebar */
+        .cat-confirm-del {
+          padding: 10px 12px;
+          background: rgba(255,80,80,.06);
+          border-top: 1px solid rgba(255,80,80,.12);
+          font-size: 12px;
+          color: rgba(240,238,255,.6);
+          line-height: 1.5;
+        }
+        .cat-confirm-del-actions {
+          display: flex;
+          gap: 6px;
+          margin-top: 8px;
+        }
+        .cat-confirm-btn {
+          flex: 1;
+          padding: 6px 0;
+          border: none;
+          border-radius: 6px;
+          font-size: 12px;
+          cursor: pointer;
+          font-family: inherit;
+        }
+        .cat-confirm-btn.danger {
+          background: rgba(255,80,80,.18);
+          color: #ff6464;
+        }
+        .cat-confirm-btn.cancel {
+          background: rgba(255,255,255,.06);
+          color: rgba(240,238,255,.5);
+        }
+        .cat-confirm-btn:disabled { opacity: .5; cursor: default; }
 
         .menu-main { flex: 1; min-width: 0; }
 
@@ -506,24 +701,71 @@ export default function MenuPage() {
       `}</style>
 
       {/* Page header */}
-      <div style={{
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        marginBottom: 24, animation: 'fadeUp .3s ease both',
-      }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          marginBottom: 24,
+          animation: "fadeUp .3s ease both",
+        }}
+      >
         <div>
-          <h1 style={{
-            margin: 0, fontSize: 22, fontWeight: 700,
-            fontFamily: "'Clash Display',sans-serif", letterSpacing: -.3,
-          }}>
-            Menyu boshqaruvi
+          <h1
+            style={{
+              margin: 0,
+              fontSize: 22,
+              fontWeight: 700,
+              fontFamily: "'Clash Display',sans-serif",
+              letterSpacing: -0.3,
+            }}
+          >
+            <span style={{ color: "#7c6bff" }}>{userName}</span> Boshqaruvi
           </h1>
-          <div style={{ fontSize: 13, color: 'rgba(240,238,255,.35)', marginTop: 4 }}>
+          {/* date + username subtitle */}
+          <div
+            style={{
+              fontSize: 13,
+              color: "rgba(240,238,255,.35)",
+              marginTop: 4,
+            }}
+          >
+            {getUzDate()}
+            {userName && (
+              <>
+                {" "}
+                ·{" "}
+                <span style={{ color: "rgba(124,107,255,0.8)" }}>
+                  {userName}
+                </span>
+              </>
+            )}
+          </div>
+          <div
+            style={{
+              fontSize: 12,
+              color: "rgba(240,238,255,.25)",
+              marginTop: 2,
+            }}
+          >
             {menuItems.length} ta taom · {categories.length} ta kategoriya
           </div>
         </div>
-        <button className="btn-primary" onClick={() => router.push('/dashboard/menu/new')}>
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-            <line x1="7" y1="1" x2="7" y2="13"/><line x1="1" y1="7" x2="13" y2="7"/>
+        <button
+          className="btn-primary"
+          onClick={() => router.push("/dashboard/menu/new")}
+        >
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 14 14"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+          >
+            <line x1="7" y1="1" x2="7" y2="13" />
+            <line x1="1" y1="7" x2="13" y2="7" />
           </svg>
           Taom qo&apos;shish
         </button>
@@ -532,15 +774,15 @@ export default function MenuPage() {
       {/* Mobile category tabs */}
       <div className="menu-cats-mobile">
         <button
-          className={`cat-tab${selectedCategory === null ? ' active' : ''}`}
+          className={`cat-tab${selectedCategory === null ? " active" : ""}`}
           onClick={() => setSelectedCategory(null)}
         >
           Barchasi ({menuItems.length})
         </button>
-        {categories.map(cat => (
+        {categories.map((cat) => (
           <button
             key={cat.id}
-            className={`cat-tab${selectedCategory === cat.id ? ' active' : ''}`}
+            className={`cat-tab${selectedCategory === cat.id ? " active" : ""}`}
             onClick={() => setSelectedCategory(cat.id)}
           >
             {cat.name} ({catCount(cat.id)})
@@ -551,70 +793,274 @@ export default function MenuPage() {
       <div className="menu-layout">
         {/* Desktop categories sidebar */}
         <aside className="menu-cats-panel">
-          <div style={{
-            padding: '14px 14px 10px',
-            fontSize: 11, fontWeight: 500, letterSpacing: 1.4,
-            textTransform: 'uppercase' as const,
-            color: 'rgba(240,238,255,.25)',
-          }}>
+          <div
+            style={{
+              padding: "14px 14px 10px",
+              fontSize: 11,
+              fontWeight: 500,
+              letterSpacing: 1.4,
+              textTransform: "uppercase" as const,
+              color: "rgba(240,238,255,.25)",
+            }}
+          >
             Kategoriyalar
           </div>
 
           <div
-            className={`cat-item${selectedCategory === null ? ' active' : ''}`}
+            className={`cat-item${selectedCategory === null ? " active" : ""}`}
             onClick={() => setSelectedCategory(null)}
           >
             <span>Barchasi</span>
             <span className="cat-count">{menuItems.length}</span>
           </div>
 
-          {categories.map(cat => (
-            <div
-              key={cat.id}
-              className={`cat-item${selectedCategory === cat.id ? ' active' : ''}`}
-              onClick={() => setSelectedCategory(cat.id)}
-            >
-              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
-                {cat.name}
-              </span>
-              <span className="cat-count" style={{ marginLeft: 6, flexShrink: 0 }}>{catCount(cat.id)}</span>
+          {categories.map((cat) => (
+            <div key={cat.id}>
+              {editingCatId === cat.id ? (
+                /* Inline edit mode */
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 4,
+                    padding: "7px 10px",
+                  }}
+                >
+                  <input
+                    ref={editCatInputRef}
+                    className="cat-edit-input"
+                    value={editingCatName}
+                    onChange={(e) => setEditingCatName(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") saveEditCat(cat.id);
+                      if (e.key === "Escape") cancelEditCat();
+                    }}
+                    disabled={savingCatId === cat.id}
+                  />
+                  {/* Checkmark save */}
+                  <button
+                    onClick={() => saveEditCat(cat.id)}
+                    disabled={savingCatId === cat.id}
+                    style={{
+                      background: "none",
+                      border: "none",
+                      cursor: "pointer",
+                      color: "#7c6bff",
+                      padding: "2px 3px",
+                      flexShrink: 0,
+                    }}
+                    title="Saqlash"
+                  >
+                    <svg
+                      width="13"
+                      height="13"
+                      viewBox="0 0 13 13"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <polyline points="1.5 7 5 10.5 11.5 2.5" />
+                    </svg>
+                  </button>
+                  {/* Cancel */}
+                  <button
+                    onClick={cancelEditCat}
+                    style={{
+                      background: "none",
+                      border: "none",
+                      cursor: "pointer",
+                      color: "rgba(240,238,255,.35)",
+                      padding: "2px 3px",
+                      flexShrink: 0,
+                    }}
+                    title="Bekor"
+                  >
+                    <svg
+                      width="11"
+                      height="11"
+                      viewBox="0 0 11 11"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                    >
+                      <line x1="1" y1="1" x2="10" y2="10" />
+                      <line x1="10" y1="1" x2="1" y2="10" />
+                    </svg>
+                  </button>
+                </div>
+              ) : (
+                /* Normal row */
+                <div
+                  className={`cat-item${selectedCategory === cat.id ? " active" : ""}`}
+                  onClick={() => setSelectedCategory(cat.id)}
+                >
+                  <span
+                    style={{
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                      flex: 1,
+                    }}
+                  >
+                    {cat.name}
+                  </span>
+                  <span className="cat-count">{catCount(cat.id)}</span>
+                  {/* Pencil: enter inline edit */}
+                  <button
+                    className="cat-edit-btn"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      startEditCat(cat);
+                    }}
+                    title="Tahrirlash"
+                  >
+                    <svg
+                      width="12"
+                      height="12"
+                      viewBox="0 0 12 12"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M8.5 1.5a1.414 1.414 0 0 1 2 2L3.5 10.5 1 11l.5-2.5L8.5 1.5z" />
+                    </svg>
+                  </button>
+                  {/* Trash: only for non-"Boshqa" categories */}
+                  {cat.name !== "Boshqa" && (
+                    <button
+                      className="cat-del-btn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setConfirmDeleteCatId(cat.id);
+                        setEditingCatId(null);
+                      }}
+                      title="O'chirish"
+                    >
+                      <svg
+                        width="11"
+                        height="11"
+                        viewBox="0 0 11 11"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <polyline points="1 2.5 10 2.5" />
+                        <path d="M2 2.5V9a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1V2.5" />
+                        <path d="M3.5 2.5V1.5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v1" />
+                      </svg>
+                    </button>
+                  )}
+                </div>
+              )}
+
+              {/* Delete confirmation panel */}
+              {confirmDeleteCatId === cat.id && (
+                <div className="cat-confirm-del">
+                  Bu kategoriyani o&apos;chirsangiz, taomlar
+                  &ldquo;Boshqa&rdquo; ga o&apos;tadi. Davom etasizmi?
+                  <div className="cat-confirm-del-actions">
+                    <button
+                      className="cat-confirm-btn danger"
+                      onClick={() => deleteCategory(cat.id)}
+                      disabled={deletingCatId === cat.id}
+                    >
+                      {deletingCatId === cat.id ? "..." : "Ha, o'chir"}
+                    </button>
+                    <button
+                      className="cat-confirm-btn cancel"
+                      onClick={() => setConfirmDeleteCatId(null)}
+                    >
+                      Bekor
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           ))}
 
           {showAddCat ? (
-              <div style={{padding:'10px 12px',borderTop:'1px solid rgba(255,255,255,.06)'}}>
-                <input
-                    className="add-cat-input"
-                    placeholder="Kategoriya nomi..."
-                    value={newCatName}
-                    onChange={e => setNewCatName(e.target.value)}
-                    onKeyDown={e => {
-                      if (e.key === 'Enter') handleAddCategory()
-                      if (e.key === 'Escape') { setShowAddCat(false); setNewCatName('') }
-                    }}
-                    autoFocus
-                    style={{width:'100%',marginBottom:8}}
-                />
-                <div style={{display:'flex',gap:6}}>
-                  <button
-                      onClick={() => { setShowAddCat(false); setNewCatName('') }}
-                      style={{flex:1,background:'rgba(255,255,255,.06)',color:'rgba(240,238,255,.6)',border:'none',borderRadius:7,padding:'8px',fontSize:13,cursor:'pointer'}}
-                  >
-                    Bekor
-                  </button>
-                  <button
-                      onClick={handleAddCategory}
-                      disabled={addingCat}
-                      style={{flex:1,background:'#7c6bff',color:'#fff',border:'none',borderRadius:7,padding:'8px',fontSize:13,cursor:'pointer',fontFamily:"'Cabinet Grotesk',sans-serif"}}
-                  >
-                    {addingCat ? 'Saqlanmoqda...' : 'Saqlash'}
-                  </button>
-                </div>
+            <div
+              style={{
+                padding: "10px 12px",
+                borderTop: "1px solid rgba(255,255,255,.06)",
+              }}
+            >
+              <input
+                className="add-cat-input"
+                placeholder="Kategoriya nomi..."
+                value={newCatName}
+                onChange={(e) => setNewCatName(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleAddCategory();
+                  if (e.key === "Escape") {
+                    setShowAddCat(false);
+                    setNewCatName("");
+                  }
+                }}
+                autoFocus
+                style={{ width: "100%", marginBottom: 8 }}
+              />
+              <div style={{ display: "flex", gap: 6 }}>
+                <button
+                  onClick={() => {
+                    setShowAddCat(false);
+                    setNewCatName("");
+                  }}
+                  style={{
+                    flex: 1,
+                    background: "rgba(255,255,255,.06)",
+                    color: "rgba(240,238,255,.6)",
+                    border: "none",
+                    borderRadius: 7,
+                    padding: "8px",
+                    fontSize: 13,
+                    cursor: "pointer",
+                  }}
+                >
+                  Bekor
+                </button>
+                <button
+                  onClick={handleAddCategory}
+                  disabled={addingCat}
+                  style={{
+                    flex: 1,
+                    background: "#7c6bff",
+                    color: "#fff",
+                    border: "none",
+                    borderRadius: 7,
+                    padding: "8px",
+                    fontSize: 13,
+                    cursor: "pointer",
+                    fontFamily: "'Cabinet Grotesk',sans-serif",
+                  }}
+                >
+                  {addingCat ? "Saqlanmoqda..." : "Saqlash"}
+                </button>
               </div>
+            </div>
           ) : (
-            <button className="btn-show-add-cat" onClick={() => setShowAddCat(true)}>
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                <line x1="6" y1="1" x2="6" y2="11"/><line x1="1" y1="6" x2="11" y2="6"/>
+            <button
+              className="btn-show-add-cat"
+              onClick={() => setShowAddCat(true)}
+            >
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 12 12"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+              >
+                <line x1="6" y1="1" x2="6" y2="11" />
+                <line x1="1" y1="6" x2="11" y2="6" />
               </svg>
               Kategoriya qo&apos;shish
             </button>
@@ -625,23 +1071,41 @@ export default function MenuPage() {
         <div className="menu-main">
           {/* Search */}
           <div className="menu-top">
-            <div style={{ position: 'relative', flex: 1 }}>
+            <div style={{ position: "relative", flex: 1 }}>
               <svg
-                width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" strokeWidth="1.5"
-                style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'rgba(240,238,255,.3)', pointerEvents: 'none' }}
+                width="15"
+                height="15"
+                viewBox="0 0 15 15"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                style={{
+                  position: "absolute",
+                  left: 12,
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  color: "rgba(240,238,255,.3)",
+                  pointerEvents: "none",
+                }}
               >
-                <circle cx="6.5" cy="6.5" r="5"/>
-                <line x1="10" y1="10" x2="14" y2="14"/>
+                <circle cx="6.5" cy="6.5" r="5" />
+                <line x1="10" y1="10" x2="14" y2="14" />
               </svg>
               <input
                 className="search-input"
                 placeholder="Taom qidirish..."
                 value={search}
-                onChange={e => setSearch(e.target.value)}
+                onChange={(e) => setSearch(e.target.value)}
               />
             </div>
             {search && (
-              <div style={{ fontSize: 13, color: 'rgba(240,238,255,.35)', whiteSpace: 'nowrap' }}>
+              <div
+                style={{
+                  fontSize: 13,
+                  color: "rgba(240,238,255,.35)",
+                  whiteSpace: "nowrap",
+                }}
+              >
                 {filtered.length} natija
               </div>
             )}
@@ -650,8 +1114,12 @@ export default function MenuPage() {
           {/* Grid */}
           {loading ? (
             <div className="loading-grid">
-              {[0,1,2,3,4,5].map(i => (
-                <div key={i} className="skeleton" style={{ animationDelay: `${i * .1}s` }}/>
+              {[0, 1, 2, 3, 4, 5].map((i) => (
+                <div
+                  key={i}
+                  className="skeleton"
+                  style={{ animationDelay: `${i * 0.1}s` }}
+                />
               ))}
             </div>
           ) : (
@@ -659,14 +1127,23 @@ export default function MenuPage() {
               {filtered.length === 0 ? (
                 <div className="empty-state">
                   <div style={{ fontSize: 44, marginBottom: 12 }}>🍽️</div>
-                  <div style={{ fontSize: 15, fontWeight: 500, color: 'rgba(240,238,255,.4)', marginBottom: 6 }}>
-                    {search || selectedCategory ? 'Hech narsa topilmadi' : 'Hali taom qo\'shilmagan'}
+                  <div
+                    style={{
+                      fontSize: 15,
+                      fontWeight: 500,
+                      color: "rgba(240,238,255,.4)",
+                      marginBottom: 6,
+                    }}
+                  >
+                    {search || selectedCategory
+                      ? "Hech narsa topilmadi"
+                      : "Hali taom qo'shilmagan"}
                   </div>
                   {!search && !selectedCategory && (
                     <button
                       className="btn-primary"
-                      style={{ margin: '12px auto 0', display: 'flex' }}
-                      onClick={() => router.push('/dashboard/menu/new')}
+                      style={{ margin: "12px auto 0", display: "flex" }}
+                      onClick={() => router.push("/dashboard/menu/new")}
                     >
                       Birinchi taomni qo&apos;shing
                     </button>
@@ -674,24 +1151,44 @@ export default function MenuPage() {
                 </div>
               ) : (
                 filtered.map((item, i) => (
-                  <div key={item.id} className="item-card" style={{ animationDelay: `${i * .05}s` }}>
+                  <div
+                    key={item.id}
+                    className="item-card"
+                    style={{ animationDelay: `${i * 0.05}s` }}
+                  >
                     <div className="item-img">
-                      {item.imageUrl
-                        ? <img src={item.imageUrl} alt={item.name}/>
-                        : <span>{emojiFor(item.name)}</span>
-                      }
+                      {item.imageUrl ? (
+                        <img src={item.imageUrl} alt={item.name} />
+                      ) : (
+                        <span>{emojiFor(item.name)}</span>
+                      )}
                     </div>
 
                     <div className="item-body">
                       <div className="item-name">{item.name}</div>
-                      <div className="item-cat-badge">{item.category.name}</div>
+                      {/* Category badge (left) + availability badge (right) on same row */}
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                        }}
+                      >
+                        <div className="item-cat-badge">
+                          {item.category.name}
+                        </div>
+                        <span
+                          className={
+                            item.isAvailable ? "badge-active" : "badge-inactive"
+                          }
+                        >
+                          {item.isAvailable ? "Mavjud" : "Tugagan"}
+                        </span>
+                      </div>
                       <div className="item-footer">
                         <div className="item-price">
                           {parseFloat(item.price).toLocaleString()} so&apos;m
                         </div>
-                        <span className={item.isAvailable ? 'badge-active' : 'badge-inactive'}>
-                          {item.isAvailable ? 'Mavjud' : 'Tugagan'}
-                        </span>
                       </div>
                     </div>
 
@@ -703,18 +1200,29 @@ export default function MenuPage() {
                             onClick={() => handleDelete(item.id)}
                             disabled={deletingId === item.id}
                           >
-                            {deletingId === item.id ? '...' : "O'chirish"}
+                            {deletingId === item.id ? "..." : "O'chirish"}
                           </button>
-                          <button className="btn-cancel" onClick={() => setConfirmDeleteId(null)}>
+                          <button
+                            className="btn-cancel"
+                            onClick={() => setConfirmDeleteId(null)}
+                          >
                             Bekor
                           </button>
                         </>
                       ) : (
                         <>
-                          <button className="btn-edit" onClick={() => router.push(`/dashboard/menu/${item.id}/edit`)}>
+                          <button
+                            className="btn-edit"
+                            onClick={() =>
+                              router.push(`/dashboard/menu/${item.id}/edit`)
+                            }
+                          >
                             Tahrirlash
                           </button>
-                          <button className="btn-delete" onClick={() => setConfirmDeleteId(item.id)}>
+                          <button
+                            className="btn-delete"
+                            onClick={() => setConfirmDeleteId(item.id)}
+                          >
                             O&apos;chirish
                           </button>
                         </>
@@ -728,5 +1236,5 @@ export default function MenuPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }
