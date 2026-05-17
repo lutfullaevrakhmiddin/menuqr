@@ -120,8 +120,6 @@ export default function SidebarClient({ user, restaurant }: Props) {
       display: 'flex', flexDirection: 'column', zIndex: 50, overflow: 'hidden',
     }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Cabinet+Grotesk:wght@300;400;500;700&display=swap');
-
         @keyframes breathe {
           0%,100% { opacity:.45; text-shadow:none; }
           50%      { opacity:1;   text-shadow:0 0 28px rgba(201,168,76,.55),0 0 56px rgba(201,168,76,.2); }
@@ -136,7 +134,7 @@ export default function SidebarClient({ user, restaurant }: Props) {
         }
 
         .sb-logo {
-          font-family:'Clash Display',sans-serif;
+          font-family:var(--font-display),sans-serif;
           font-size:22px; font-weight:700; letter-spacing:-.5px;
           background:linear-gradient(90deg,#9A7B1A,#C9A84C,#E8C97A,#C9A84C,#9A7B1A);
           background-size:200% auto;
@@ -163,7 +161,7 @@ export default function SidebarClient({ user, restaurant }: Props) {
           font-size:13.5px; font-weight:400;
           color:rgba(240,238,255,.45); text-decoration:none;
           transition:all .18s; border-left:3px solid transparent;
-          margin-bottom:2px; font-family:'Cabinet Grotesk',sans-serif;
+          margin-bottom:2px; font-family:var(--font-body),sans-serif;
         }
         .nav-link:hover { color:#f0eeff; background:rgba(124,107,255,.07); }
         .nav-link.active { color:#f0eeff; background:rgba(124,107,255,.13); border-left-color:#7c6bff; }
@@ -172,7 +170,7 @@ export default function SidebarClient({ user, restaurant }: Props) {
           display:flex; align-items:center; gap:10px;
           padding:9px 14px; border-radius:8px; font-size:13.5px;
           color:rgba(240,238,255,.25); border-left:3px solid transparent;
-          margin-bottom:2px; font-family:'Cabinet Grotesk',sans-serif;
+          margin-bottom:2px; font-family:var(--font-body),sans-serif;
           opacity:.4; cursor:default; user-select:none;
         }
 
@@ -187,7 +185,7 @@ export default function SidebarClient({ user, restaurant }: Props) {
           width:100%; padding:8px 12px; border-radius:7px;
           font-size:13px; color:rgba(240,238,255,.35);
           cursor:pointer; border:none; background:none;
-          transition:all .18s; font-family:'Cabinet Grotesk',sans-serif;
+          transition:all .18s; font-family:var(--font-body),sans-serif;
           text-align:left;
         }
         .logout-btn:hover { color:rgba(255,100,100,.85); background:rgba(255,100,100,.07); }

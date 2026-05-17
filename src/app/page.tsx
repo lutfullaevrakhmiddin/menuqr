@@ -2,10 +2,9 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-      <main style={{background:"#06060f",color:"#f0eeff",fontFamily:"'Cabinet Grotesk',sans-serif",minHeight:"100vh",overflowX:"hidden"}}>
+      <main style={{background:"#06060f",color:"#f0eeff",fontFamily:"var(--font-body),sans-serif",minHeight:"100vh",overflowX:"hidden"}}>
 
         <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Cabinet+Grotesk:wght@300;400;500;700&display=swap');
         :root{--accent:#7c6bff;--accent2:#ff6b9d;--bg:#06060f;--bg2:#0d0d1a;--border:rgba(255,255,255,0.08);--muted:rgba(240,238,255,0.45)}
         .grid-bg{position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(rgba(124,107,255,0.07) 1px,transparent 1px),linear-gradient(90deg,rgba(124,107,255,0.07) 1px,transparent 1px);background-size:60px 60px;transform:perspective(600px) rotateX(25deg) scaleY(1.6);transform-origin:bottom center;opacity:.6}
         .grid-fade{position:absolute;inset:0;pointer-events:none;background:linear-gradient(to bottom,#06060f 0%,transparent 40%,#06060f 100%)}
@@ -27,9 +26,9 @@ export default function Home() {
         .badge-2{right:220px;bottom:25%;animation:float 4s ease-in-out 2s infinite}
         .feat-card{background:#0d0d1a;padding:36px 28px;transition:background .3s;cursor:default}
         .feat-card:hover{background:rgba(124,107,255,0.05)}
-        .feat-num{font-family:'Clash Display',sans-serif;font-size:48px;font-weight:700;color:rgba(124,107,255,0.12);letter-spacing:-2px;line-height:1;margin-bottom:20px}
+        .feat-num{font-family:var(--font-display),sans-serif;font-size:48px;font-weight:700;color:rgba(124,107,255,0.12);letter-spacing:-2px;line-height:1;margin-bottom:20px}
         .step-box{padding:0 32px}
-        .step-num-box{width:56px;height:56px;border:1px solid rgba(124,107,255,0.3);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Clash Display',sans-serif;font-size:20px;font-weight:700;color:#7c6bff;margin-bottom:24px;transition:all .3s}
+        .step-num-box{width:56px;height:56px;border:1px solid rgba(124,107,255,0.3);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:var(--font-display),sans-serif;font-size:20px;font-weight:700;color:#7c6bff;margin-bottom:24px;transition:all .3s}
         .step-box:hover .step-num-box{background:rgba(124,107,255,0.1);border-color:#7c6bff}
         .f-active{font-size:11px;font-weight:500;background:rgba(124,107,255,0.15);color:#a89fff;padding:3px 10px;border-radius:20px}
         .f-soon{font-size:11px;font-weight:500;background:rgba(255,255,255,0.06);color:rgba(240,238,255,0.3);padding:3px 10px;border-radius:20px}
@@ -50,7 +49,7 @@ export default function Home() {
 
         {/* NAV */}
         <nav style={{position:"sticky",top:0,zIndex:100,display:"flex",justifyContent:"space-between",alignItems:"center",padding:"20px 48px",background:"rgba(6,6,15,0.8)",backdropFilter:"blur(20px)",borderBottom:"1px solid rgba(255,255,255,0.08)"}}>
-          <div style={{fontFamily:"'Clash Display',sans-serif",fontSize:22,fontWeight:700,letterSpacing:"-0.5px"}}>
+          <div style={{fontFamily:"var(--font-display),sans-serif",fontSize:22,fontWeight:700,letterSpacing:"-0.5px"}}>
             W<span style={{color:"#7c6bff"}}>R</span>
           </div>
           <div style={{display:"flex",gap:28}}>
@@ -76,7 +75,7 @@ export default function Home() {
               <span style={{width:6,height:6,background:"#7c6bff",borderRadius:"50%",animation:"pulse 2s infinite",display:"inline-block"}}/>
               Restoran uchun raqamli yechim
             </div>
-            <h1 className="hero-h1" style={{fontFamily:"'Clash Display',sans-serif",fontSize:"clamp(52px,8vw,110px)",fontWeight:700,lineHeight:.92,letterSpacing:"-4px",marginBottom:32}}>
+            <h1 className="hero-h1" style={{fontFamily:"var(--font-display),sans-serif",fontSize:"clamp(52px,8vw,110px)",fontWeight:700,lineHeight:.92,letterSpacing:"-4px",marginBottom:32}}>
               Jarayonni<br/>
               <span style={{WebkitTextStroke:"1px rgba(240,238,255,0.25)",color:"transparent"}}>raqamlash</span>
               <span style={{color:"#7c6bff"}}>tiring.</span>
@@ -96,7 +95,7 @@ export default function Home() {
 
           <div className="badge badge-1">
             <div style={{fontSize:10,color:"rgba(240,238,255,0.45)",letterSpacing:".1em",textTransform:"uppercase",marginBottom:4}}>Faol restoranlar</div>
-            <div style={{fontFamily:"'Clash Display',sans-serif",fontSize:28,fontWeight:700,color:"#7c6bff"}}>500+</div>
+            <div style={{fontFamily:"var(--font-display),sans-serif",fontSize:28,fontWeight:700,color:"#7c6bff"}}>500+</div>
             <div style={{fontSize:12,color:"rgba(240,238,255,0.45)",marginTop:2}}>va o&apos;sib bormoqda</div>
           </div>
           <div className="badge badge-2">
@@ -104,7 +103,7 @@ export default function Home() {
               <span style={{width:7,height:7,borderRadius:"50%",background:"#22c55e",animation:"pulse 2s infinite",display:"inline-block"}}/>
               Holat
             </div>
-            <div style={{fontFamily:"'Clash Display',sans-serif",fontSize:17,fontWeight:700,color:"#f0eeff",marginTop:4}}>Ishga tayyor</div>
+            <div style={{fontFamily:"var(--font-display),sans-serif",fontSize:17,fontWeight:700,color:"#f0eeff",marginTop:4}}>Ishga tayyor</div>
           </div>
 
           <div style={{position:"absolute",bottom:40,left:48,zIndex:2,display:"flex",alignItems:"center",gap:12,fontSize:12,letterSpacing:".1em",textTransform:"uppercase",color:"rgba(240,238,255,0.45)"}}>
@@ -119,7 +118,7 @@ export default function Home() {
             <span style={{width:24,height:1,background:"#7c6bff",display:"inline-block"}}/>
             Xususiyatlar
           </div>
-          <h2 style={{fontFamily:"'Clash Display',sans-serif",fontSize:"clamp(36px,5vw,56px)",fontWeight:700,letterSpacing:"-2px",marginBottom:16,lineHeight:1.05}}>
+          <h2 style={{fontFamily:"var(--font-display),sans-serif",fontSize:"clamp(36px,5vw,56px)",fontWeight:700,letterSpacing:"-2px",marginBottom:16,lineHeight:1.05}}>
             <span style={{color:"#f0eeff"}}>Siz</span>
             <span style={{color:"rgba(240,238,255,0.45)",fontWeight:300,fontSize:"clamp(28px,3.5vw,40px)"}}> va </span>
             <span style={{background:"linear-gradient(135deg,#7c6bff,#ff6b9d)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>mijozlar</span>
@@ -181,7 +180,7 @@ export default function Home() {
             <span style={{width:24,height:1,background:"#7c6bff",display:"inline-block"}}/>
             Qanday ishlaydi
           </div>
-          <h2 style={{fontFamily:"'Clash Display',sans-serif",fontSize:"clamp(36px,5vw,56px)",fontWeight:700,letterSpacing:"-2px",marginBottom:60,lineHeight:1.05}}>
+          <h2 style={{fontFamily:"var(--font-display),sans-serif",fontSize:"clamp(36px,5vw,56px)",fontWeight:700,letterSpacing:"-2px",marginBottom:60,lineHeight:1.05}}>
             Tezda ishga tushing
           </h2>
           <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:0}}>
@@ -206,7 +205,7 @@ export default function Home() {
               {num:"Tezlik",label:"kafolati bilan"},
             ].map((s,i)=>(
                 <div key={i} className="stat-box">
-                  <div style={{fontFamily:"'Clash Display',sans-serif",fontSize:48,fontWeight:700,color:"#7c6bff",lineHeight:1,marginBottom:8,letterSpacing:"-2px"}}>{s.num}</div>
+                  <div style={{fontFamily:"var(--font-display),sans-serif",fontSize:48,fontWeight:700,color:"#7c6bff",lineHeight:1,marginBottom:8,letterSpacing:"-2px"}}>{s.num}</div>
                   <div style={{fontSize:13,color:"rgba(240,238,255,0.45)"}}>{s.label}</div>
                 </div>
             ))}
@@ -216,7 +215,7 @@ export default function Home() {
         {/* CTA */}
         <section style={{padding:"120px 48px",textAlign:"center",position:"relative",overflow:"hidden",background:"#0d0d1a",borderTop:"1px solid rgba(255,255,255,0.08)"}}>
           <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at center,rgba(124,107,255,0.1) 0%,transparent 70%)",pointerEvents:"none"}}/>
-          <h2 style={{fontFamily:"'Clash Display',sans-serif",fontSize:"clamp(40px,5vw,72px)",fontWeight:700,letterSpacing:"-3px",marginBottom:20,lineHeight:.95,position:"relative",zIndex:1}}>
+          <h2 style={{fontFamily:"var(--font-display),sans-serif",fontSize:"clamp(40px,5vw,72px)",fontWeight:700,letterSpacing:"-3px",marginBottom:20,lineHeight:.95,position:"relative",zIndex:1}}>
             Raqamli jarayondan<br/><span style={{color:"#7c6bff"}}>foydalaning</span>
           </h2>
           <p style={{fontSize:17,color:"rgba(240,238,255,0.45)",maxWidth:480,margin:"0 auto 40px",lineHeight:1.7,fontWeight:300,position:"relative",zIndex:1}}>
@@ -239,7 +238,7 @@ export default function Home() {
 
         {/* FOOTER */}
         <footer style={{padding:"32px 48px",borderTop:"1px solid rgba(255,255,255,0.08)",display:"flex",justifyContent:"space-between",alignItems:"center",background:"#06060f"}}>
-          <div style={{fontFamily:"'Clash Display',sans-serif",fontSize:18,fontWeight:700}}>
+          <div style={{fontFamily:"var(--font-display),sans-serif",fontSize:18,fontWeight:700}}>
             W<span style={{color:"#7c6bff"}}>R</span>
           </div>
           <div style={{fontSize:13,color:"rgba(240,238,255,0.45)"}}>© 2025 WR Barcha huquqlar himoyalangan.</div>
