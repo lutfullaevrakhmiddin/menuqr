@@ -17,15 +17,20 @@ _Yangi chatda shu faylni tashlang va "davom etamiz" deb yozing_
 ✅ Register / Login / Logout  
 ✅ Admin dashboard (stats, toj animatsiyasi — nuqtalardan)  
 ✅ Menyu boshqaruvi (kategoriyalar + taomlar CRUD)  
+   - Kategoriya inline tahrirlash (qalam → input, Enter/✓ saqlash, Escape bekor)  
+   - Kategoriya o'chirish (axlat ikona, tasdiqlash, taomlar → "Boshqa" ga ko'chadi)  
+   - Taom kartasi: kategoriya badge (chap) + Mavjud/Tugagan (o'ng) — bir qatorda  
+   - Header subtitle: sana (o'zbekcha) + foydalanuvchi nomi (binafsha)  
 ✅ Stollar & QR (yaratish, tahrirlash, QR yuklab olish)  
 ✅ Mijoz menyu sahifasi (`/menu/[token]`) — public  
+✅ Google Fonts olib tashlandi → `next/font/google` (self-hosted, tashqi so'rov yo'q)  
 
 ---
 
 ## Dizayn qarorlari
 **Admin panel:**
 - Fon: `#06060f`, surface: `#0d0d1a`, accent: `#7c6bff`, pink: `#ff6b9d`
-- Fontlar: Cabinet Grotesk (body), Clash Display (headings)
+- Fontlar: Inter (`--font-display`, headings), Plus Jakarta Sans (`--font-body`, body) — next/font orqali
 - Toj: nuqtalardan SVG, statik, gold gradient
 
 **Mijoz menyu:**
