@@ -1,0 +1,129 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String?
+  passwordHash String
+  avatarUrl    String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  restaurantUsers RestaurantUser[]
+}
+
+model Restaurant {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  logoUrl     String?
+  description String?
+  themeColor  String?  @default("#FF6B35")
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  restaurantUsers RestaurantUser[]
+  categories      Category[]
+  menuItems       MenuItem[]
+  tables          Table[]
+  analyticsEvents AnalyticsEvent[]
+}
+
+model RestaurantUser {
+  id           String     @id @default(cuid())
+  userId       String
+  restaurantId String
+  role         UserRole   @default(OWNER)
+  createdAt    DateTime   @default(now())
+
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, restaurantId])
+}
+
+enum UserRole {
+  OWNER
+  MANAGER
+  STAFF
+}
+
+model Category {
+  id           String     @id @default(cuid())
+  restaurantId String
+  name         String
+  sortOrder    Int        @default(0)
+  isActive     Boolean    @default(true)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  menuItems    MenuItem[]
+
+  @@index([restaurantId])
+}
+
+model MenuItem {
+  id           String     @id @default(cuid())
+  restaurantId String
+  categoryId   String
+  name         String
+  description  String?
+  price        Decimal    @db.Decimal(10, 2)
+  imageUrl     String?
+  isAvailable  Boolean    @default(true)
+  sortOrder    Int        @default(0)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  category     Category   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@index([restaurantId])
+  @@index([categoryId])
+}
+
+model Table {
+  id           String           @id @default(cuid())
+  restaurantId String
+  name         String
+  qrToken      String           @unique @default(cuid())
+  status       String           @default("active")
+  isActive     Boolean          @default(true)
+  createdAt    DateTime         @default(now())
+
+  restaurant   Restaurant       @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  analyticsEvents AnalyticsEvent[]
+
+  @@unique([restaurantId, name])
+  @@index([restaurantId])
+  @@index([qrToken])
+}
+
+model AnalyticsEvent {
+  id           String      @id @default(cuid())
+  restaurantId String
+  tableId      String?
+  eventType    EventType
+  metadata     Json?
+  createdAt    DateTime    @default(now())
+
+  restaurant   Restaurant  @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  table        Table?      @relation(fields: [tableId], references: [id], onDelete: SetNull)
+
+  @@index([restaurantId])
+  @@index([createdAt])
+}
+
+enum EventType {
+  QR_SCAN
+  MENU_VIEW
+  ITEM_VIEW
+}
