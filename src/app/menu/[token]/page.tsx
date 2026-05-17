@@ -95,8 +95,8 @@ export default async function MenuPage({
   }
 
   const categoriesData = categories
-    .filter((cat) => cat.menuItems.length > 0)
-    .map((cat) => ({
+    .filter((cat: any) => cat.menuItems.length > 0)
+    .map((cat: any) => ({
       id: cat.id,
       name: cat.name,
       sortOrder: cat.sortOrder,
