@@ -85,9 +85,6 @@ User, Restaurant, RestaurantUser, Category, MenuItem, Table (status: active/inac
    - Client (MenuClient.tsx): sets document.cookie on mount when scanToken prop is non-null
 ✅ All features tested on Vercel production
 
-## Current Known Issues
-- IntersectionObserver removed during debugging (restore when convenient)
-
 ## Next Steps
 1. Connect custom domain
 2. Restore IntersectionObserver for scroll tracking

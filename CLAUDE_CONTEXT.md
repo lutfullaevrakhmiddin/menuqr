@@ -70,8 +70,9 @@ _Yangi chatda shu faylni tashlang va "davom etamiz" deb yozing_
 ---
 
 ## Keyingi bosqichlar
-1. **Analytics tuzatish** — QR scan dashboard da `0` ko'rsatadi, real hisob kerak
-2. **Vercel deploy** — to'liq test (Supabase Storage, settings, login hammasi)
+1. Custom domen (GitHub Student Pack)
+2. IntersectionObserver tiklash
+3. Buyurtmalar (kelajak)
 3. **Real domen** ulash
 4. **Buyurtmalar** (kelajak — stol orqali buyurtma berish)
 
