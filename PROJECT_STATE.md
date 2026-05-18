@@ -1,5 +1,5 @@
 # MenuQR — Project State
-Last updated: 2026-05-18 (session 2)
+Last updated: 2026-05-18 (session 3)
 
 ## Stack
 - Next.js 16.2.6, TypeScript, Prisma 7, Supabase PostgreSQL (Tokyo region)
@@ -25,13 +25,15 @@ src/
 │   │   ├── menu/new/page.tsx (add item)
 │   │   ├── menu/[id]/edit/page.tsx (edit item)
 │   │   ├── tables/page.tsx (tables & QR)
-│   │   └── tables/new/page.tsx (add table)
+│   │   ├── tables/new/page.tsx (add table)
+│   │   └── settings/page.tsx (restaurant info, logo, extras disabled)
 │   ├── api/auth/ (login, logout, register, me)
 │   ├── api/categories/ (GET, POST, PATCH?id=)
 │   ├── api/categories/[id]/ (PATCH, DELETE)
 │   ├── api/menu-items/ (GET, POST, [id]: GET, PUT, DELETE)
 │   ├── api/tables/ (GET, POST, [id]: PATCH, DELETE)
 │   ├── api/upload/ (POST — multipart, validates type+size, uploads to Supabase Storage)
+│   ├── api/settings/ (GET — name/logoUrl/description; PATCH — update + auto-delete old Storage file)
 │   └── menu/[token]/ (public customer page: page.tsx + MenuClient.tsx)
 ├── components/
 │   └── ImageUpload.tsx ("use client" — URL tab + drag&drop upload tab, preview, clear)
@@ -65,14 +67,20 @@ User, Restaurant, RestaurantUser, Category, MenuItem, Table (status: active/inac
    - src/app/api/upload/route.ts — POST multipart; validates MIME (jpeg/png/webp/gif) + size (5MB); path: {restaurantId}/{nanoid(12)}.{ext}; bucket: "menuqr-images"
    - src/components/ImageUpload.tsx — "use client"; URL tab (direct input) + Yuklash tab (drag&drop + file picker); image preview + O'chirish button; all inline CSS
    - menu/new and menu/[id]/edit now use <ImageUpload> instead of plain URL input
+✅ Settings page (/dashboard/settings)
+   - 3 sections: restaurant info, logo upload, extras (disabled, "Tez kunda")
+   - Saqlash: PATCH /api/settings → "Saqlandi ✓" 1.5s → redirect /dashboard
+   - Bekor qilish: redirect /dashboard (no save)
+✅ Logo display
+   - Sidebar: 36×36px logo image replaces "WR" initials when logoUrl set
+   - Customer menu header: 42×42px logo when logoUrl set
 
 ## Current Known Issues
 - IntersectionObserver removed during debugging (can restore after deploy)
 - Analytics: QR_SCAN saved to DB but dashboard shows hardcoded 0
-- Settings page: not built yet
 
 ## Next Steps
-1. Deploy to Vercel
-2. Connect custom domain
-3. Restore IntersectionObserver for scroll tracking
-4. Settings page (restaurant name, logo, theme)
+1. Analytics tuzatish — QR scan dashboard da 0 ko'rsatadi, real count kerak
+2. Deploy to Vercel (to'liq test)
+3. Connect custom domain
+4. Restore IntersectionObserver for scroll tracking

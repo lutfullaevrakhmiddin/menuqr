@@ -23,7 +23,19 @@ _Yangi chatda shu faylni tashlang va "davom etamiz" deb yozing_
    - Header subtitle: sana (o'zbekcha) + foydalanuvchi nomi (binafsha)  
 ✅ Stollar & QR (yaratish, tahrirlash, QR yuklab olish)  
 ✅ Mijoz menyu sahifasi (`/menu/[token]`) — public  
-✅ Google Fonts olib tashlandi → `next/font/google` (self-hosted, tashqi so'rov yo'q)  
+✅ Google Fonts olib tashlandi → `next/font/google` (self-hosted, tashqi so'rov yo'q)
+✅ Rasm yuklash (Supabase Storage)
+   - `src/lib/supabase.ts` — supabaseAdmin (service role)
+   - `POST /api/upload` — MIME + 5MB validatsiya, `{restaurantId}/{nanoid}.{ext}` path
+   - `src/components/ImageUpload.tsx` — URL tab + Yuklash tab (drag&drop), preview, O'chirish
+   - menu/new va menu/[id]/edit da `<ImageUpload>` ishlatiladi
+✅ Sozlamalar sahifasi (`/dashboard/settings`)
+   - 3 bo'lim: restoran ma'lumotlari, logo, qo'shimcha (disabled)
+   - Saqlash → PATCH `/api/settings` → "Saqlandi ✓" 1.5s → `/dashboard`
+   - Bekor qilish → `/dashboard`
+✅ Logo ko'rinishi
+   - Sidebar: `logoUrl` bo'lsa 36×36px rasm (aks holda "WR" harflari)
+   - Mijoz menyu header: `logoUrl` bo'lsa 42×42px rasm  
 
 ---
 
@@ -53,19 +65,15 @@ _Yangi chatda shu faylni tashlang va "davom etamiz" deb yozing_
 
 ## Hozirgi muammolar
 - IntersectionObserver olib tashlangan (scroll tracking yo'q) — deploydan keyin qaytaramiz
-- Rasm: faqat URL input, Supabase Storage bor lekin UI yo'q
 - Analytics: QR_SCAN DB ga yoziladi lekin dashboard da `0` ko'rsatadi
-- Sozlamalar sahifasi: hali qurilmagan
 
 ---
 
 ## Keyingi bosqichlar
-1. **Vercel deploy** — asosiy qadam
-2. **GitHub repo** — kod saqlash
+1. **Analytics tuzatish** — QR scan dashboard da `0` ko'rsatadi, real hisob kerak
+2. **Vercel deploy** — to'liq test (Supabase Storage, settings, login hammasi)
 3. **Real domen** ulash
-4. Sozlamalar sahifasi
-5. Rasm yuklash (Supabase Storage)
-6. Analytics dashboard
+4. **Buyurtmalar** (kelajak — stol orqali buyurtma berish)
 
 ---
 
@@ -75,8 +83,8 @@ Bu MenuQR loyihasi — restoran uchun QR menyu SaaS.
 CLAUDE_CONTEXT.md faylini o'qidingiz.
 PROJECT_STATE.md ham loyiha papkasida bor.
 
-Keyingi qadam: Vercel ga deploy qilamiz.
-GitHub repo yaratamiz va Vercel ga ulaymiz.
+Keyingi qadam: Analytics tuzatamiz (dashboard da QR scan 0 ko'rsatadi).
+Keyin Vercel ga deploy qilamiz.
 ```
 
 ---

@@ -36,6 +36,7 @@ type Props = {
   restaurant: RestaurantData;
   table: TableData;
   categories: CategoryData[];
+  scanToken: string | null;
 };
 
 function formatPrice(price: string): string {
@@ -43,8 +44,14 @@ function formatPrice(price: string): string {
   return n.toLocaleString("ru-RU") + " so'm";
 }
 
-export default function MenuClient({ restaurant, table, categories }: Props) {
+export default function MenuClient({ restaurant, table, categories, scanToken }: Props) {
   const [active, setActive] = React.useState("all");
+
+  React.useEffect(() => {
+    if (scanToken) {
+      document.cookie = `scanned_${scanToken}=1; max-age=1800; path=/; SameSite=Lax`;
+    }
+  }, [scanToken]);
 
   return (
     <>

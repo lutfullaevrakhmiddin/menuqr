@@ -1,3 +1,4 @@
+import { cookies } from 'next/headers'
 import { prisma } from '@/lib/prisma'
 import { Playfair_Display, DM_Sans } from 'next/font/google'
 import MenuClient from './MenuClient'
@@ -62,6 +63,10 @@ export default async function MenuPage({
     )
   }
 
+  const cookieStore = await cookies()
+  const scanCookieName = `scanned_${token}`
+  const alreadyScanned = cookieStore.has(scanCookieName)
+
   const [categories] = await Promise.all([
     prisma.category.findMany({
       where: { restaurantId: table.restaurantId, isActive: true },
@@ -72,13 +77,15 @@ export default async function MenuPage({
         },
       },
     }),
-    prisma.analyticsEvent.create({
-      data: {
-        eventType: 'QR_SCAN',
-        restaurantId: table.restaurantId,
-        tableId: table.id,
-      },
-    }),
+    alreadyScanned
+      ? Promise.resolve(null)
+      : prisma.analyticsEvent.create({
+          data: {
+            eventType: 'QR_SCAN',
+            restaurantId: table.restaurantId,
+            tableId: table.id,
+          },
+        }),
   ])
 
   const restaurant = {
@@ -117,6 +124,7 @@ export default async function MenuPage({
         restaurant={restaurant}
         table={tableData}
         categories={categoriesData}
+        scanToken={alreadyScanned ? null : token}
       />
     </div>
   )

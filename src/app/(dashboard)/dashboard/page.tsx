@@ -1,23 +1,18 @@
 "use client"
 import { useRouter } from 'next/navigation'
-
 import { useEffect, useState } from 'react'
 
-
-type Stat = {
-    label: string
-    value: string
-    sub: string
-    icon: string  // ← shu qatorni o'zgartiring
-    color: string
-    bg: string
-    border: string
+type StatsData = {
+  todayScans: number
+  totalTables: number
+  totalMenuItems: number
+  totalCategories: number
+  monthlyScans: number
 }
 
-const STATS = [
+const STAT_CONFIGS = [
   {
     label: 'Bugungi skanlar',
-    value: '0',
     sub: 'bugun',
     icon: (
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -35,7 +30,6 @@ const STATS = [
   },
   {
     label: 'Jami stollar',
-    value: '0',
     sub: 'stol',
     icon: (
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -49,7 +43,6 @@ const STATS = [
   },
   {
     label: 'Menyu taomlar',
-    value: '0',
     sub: 'taom',
     icon: (
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -62,7 +55,6 @@ const STATS = [
   },
   {
     label: 'Kategoriyalar',
-    value: '0',
     sub: 'kategoriya',
     icon: (
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -84,34 +76,21 @@ const QUICK_ACTIONS = [
 ]
 
 export default function DashboardPage() {
-  const router = useRouter();
-    const [userName, setUserName] = useState('')
+  const router = useRouter()
+  const [userName, setUserName] = useState('')
+  const [stats, setStats] = useState<StatsData | null>(null)
 
-    useEffect(() => {
-        fetch('/api/auth/me')
-            .then(r => r.json())
-            .then(d => setUserName(d.name || ''))
-    }, [])
+  useEffect(() => {
+    fetch('/api/auth/me')
+      .then(r => r.json())
+      .then(d => setUserName(d.name || ''))
+  }, [])
 
-    useEffect(() => {
-        const svg = document.getElementById('crown-svg')
-        // ... toj kodi
-    }, [])
-    useEffect(() => {
-        fetch('/api/auth/me')
-            .then(r => r.json())
-            .then(d => setUserName(d.name || ''))
-    }, [])
-
-    useEffect(() => {
-        const svg = document.getElementById('crown-svg')
-        // ... toj kodi
-    }, [])
-    useEffect(() => {
-        fetch('/api/auth/me')
-            .then(r => r.json())
-            .then(d => setUserName(d.name || ''))
-    }, [])
+  useEffect(() => {
+    fetch('/api/dashboard-stats')
+      .then(r => r.json())
+      .then(d => setStats(d))
+  }, [])
 
   return (
     <div style={{ fontFamily:"'Cabinet Grotesk',sans-serif", color:'#f0eeff' }}>
@@ -250,7 +229,7 @@ export default function DashboardPage() {
             </svg>
         </div>
         <div style={{ fontSize:13, color:'rgba(240,238,255,.45)' }}>
-          Bugun <strong style={{ color:'#7c6bff' }}>0 ta</strong> QR skan qilindi
+          Bugun <strong style={{ color:'#7c6bff' }}>{stats ? stats.todayScans : '...'} ta</strong> QR skan qilindi
         </div>
       </div>
 
@@ -258,27 +237,31 @@ export default function DashboardPage() {
       <div className="stats-grid" style={{
         display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:14, marginBottom:24,
       }}>
-        {STATS.map((s, i) => (
-          <div key={s.label} className="dash-stat" style={{ animationDelay:`${i * .07}s` }}>
-            <div style={{
-              width:38, height:38, borderRadius:9,
-              background:s.bg, border:`1px solid ${s.border}`,
-              display:'flex', alignItems:'center', justifyContent:'center',
-              fontSize:18, marginBottom:14,
-            }}>
-              {s.icon}
+        {STAT_CONFIGS.map((s, i) => {
+          const statKeys: (keyof StatsData)[] = ['todayScans', 'totalTables', 'totalMenuItems', 'totalCategories']
+          const value = stats ? String(stats[statKeys[i]]) : '...'
+          return (
+            <div key={s.label} className="dash-stat" style={{ animationDelay:`${i * .07}s` }}>
+              <div style={{
+                width:38, height:38, borderRadius:9,
+                background:s.bg, border:`1px solid ${s.border}`,
+                display:'flex', alignItems:'center', justifyContent:'center',
+                fontSize:18, marginBottom:14,
+              }}>
+                {s.icon}
+              </div>
+              <div style={{
+                fontSize:30, fontWeight:800,
+                fontFamily:"'Clash Display',sans-serif",
+                color:s.color, lineHeight:1,
+              }}>
+                {value}
+              </div>
+              <div style={{ fontSize:12, color:'rgba(240,238,255,.4)', marginTop:5 }}>{s.label}</div>
+              <div style={{ fontSize:11, color:'rgba(240,238,255,.22)', marginTop:2 }}>{s.sub}</div>
             </div>
-            <div style={{
-              fontSize:30, fontWeight:800,
-              fontFamily:"'Clash Display',sans-serif",
-              color:s.color, lineHeight:1,
-            }}>
-              {s.value}
-            </div>
-            <div style={{ fontSize:12, color:'rgba(240,238,255,.4)', marginTop:5 }}>{s.label}</div>
-            <div style={{ fontSize:11, color:'rgba(240,238,255,.22)', marginTop:2 }}>{s.sub}</div>
-          </div>
-        ))}
+          )
+        })}
       </div>
 
       {/* Quick actions */}
