@@ -1,6 +1,7 @@
 "use client"
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import ImageUpload from '@/components/ImageUpload'
 
 type Category = {
   id: string
@@ -385,15 +386,9 @@ export default function NewMenuItemPage() {
               />
             </div>
 
-            {/* Image URL */}
+            {/* Image */}
             <div className="field field-full">
-              <label className="field-label">Rasm URL</label>
-              <input
-                className="field-input"
-                placeholder="https://..."
-                value={imageUrl}
-                onChange={e => setImageUrl(e.target.value)}
-              />
+              <ImageUpload value={imageUrl} onChange={setImageUrl} label="Rasm" />
             </div>
 
             {/* isAvailable toggle */}

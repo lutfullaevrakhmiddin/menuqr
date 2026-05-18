@@ -1,5 +1,5 @@
 # MenuQR — Project State
-Last updated: 2026-05-18
+Last updated: 2026-05-18 (session 2)
 
 ## Stack
 - Next.js 16.2.6, TypeScript, Prisma 7, Supabase PostgreSQL (Tokyo region)
@@ -16,21 +16,29 @@ Last updated: 2026-05-18
 6. Always read PROJECT_STATE.md before starting work
 
 ## Project Structure
-src/app/
-├── (auth)/login, register
-├── (dashboard)/dashboard/
-│   ├── page.tsx (main dashboard)
-│   ├── menu/page.tsx (menu management)
-│   ├── menu/new/page.tsx (add item)
-│   ├── menu/[id]/edit/page.tsx (edit item)
-│   ├── tables/page.tsx (tables & QR)
-│   └── tables/new/page.tsx (add table)
-├── api/auth/ (login, logout, register, me)
-├── api/categories/ (GET, POST, PATCH?id=)
-├── api/categories/[id]/ (PATCH, DELETE)
-├── api/menu-items/ (GET, POST, [id]: GET, PUT, DELETE)
-├── api/tables/ (GET, POST, [id]: PATCH, DELETE)
-└── menu/[token]/ (public customer page: page.tsx + MenuClient.tsx)
+src/
+├── app/
+│   ├── (auth)/login, register
+│   ├── (dashboard)/dashboard/
+│   │   ├── page.tsx (main dashboard)
+│   │   ├── menu/page.tsx (menu management)
+│   │   ├── menu/new/page.tsx (add item)
+│   │   ├── menu/[id]/edit/page.tsx (edit item)
+│   │   ├── tables/page.tsx (tables & QR)
+│   │   └── tables/new/page.tsx (add table)
+│   ├── api/auth/ (login, logout, register, me)
+│   ├── api/categories/ (GET, POST, PATCH?id=)
+│   ├── api/categories/[id]/ (PATCH, DELETE)
+│   ├── api/menu-items/ (GET, POST, [id]: GET, PUT, DELETE)
+│   ├── api/tables/ (GET, POST, [id]: PATCH, DELETE)
+│   ├── api/upload/ (POST — multipart, validates type+size, uploads to Supabase Storage)
+│   └── menu/[token]/ (public customer page: page.tsx + MenuClient.tsx)
+├── components/
+│   └── ImageUpload.tsx ("use client" — URL tab + drag&drop upload tab, preview, clear)
+└── lib/
+    ├── auth.ts
+    ├── prisma.ts
+    └── supabase.ts (supabaseAdmin — createClient with SUPABASE_SECRET_KEY)
 
 ## Database Models
 User, Restaurant, RestaurantUser, Category, MenuItem, Table (status: active/inactive), AnalyticsEvent
@@ -52,10 +60,14 @@ User, Restaurant, RestaurantUser, Category, MenuItem, Table (status: active/inac
    - Strikethrough price + "Tugagan" badge for unavailable
    - Stol name badge in header
 ✅ Google Fonts removed — next/font/google (self-hosted, no external requests)
+✅ Supabase Storage image upload wired to UI
+   - src/lib/supabase.ts — supabaseAdmin (env: NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SECRET_KEY)
+   - src/app/api/upload/route.ts — POST multipart; validates MIME (jpeg/png/webp/gif) + size (5MB); path: {restaurantId}/{nanoid(12)}.{ext}; bucket: "menuqr-images"
+   - src/components/ImageUpload.tsx — "use client"; URL tab (direct input) + Yuklash tab (drag&drop + file picker); image preview + O'chirish button; all inline CSS
+   - menu/new and menu/[id]/edit now use <ImageUpload> instead of plain URL input
 
 ## Current Known Issues
 - IntersectionObserver removed during debugging (can restore after deploy)
-- Image upload: URL only (Supabase Storage configured but not wired to UI)
 - Analytics: QR_SCAN saved to DB but dashboard shows hardcoded 0
 - Settings page: not built yet
 
@@ -63,5 +75,4 @@ User, Restaurant, RestaurantUser, Category, MenuItem, Table (status: active/inac
 1. Deploy to Vercel
 2. Connect custom domain
 3. Restore IntersectionObserver for scroll tracking
-4. Wire Supabase Storage for image upload
-5. Settings page (restaurant name, logo, theme)
+4. Settings page (restaurant name, logo, theme)
