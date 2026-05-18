@@ -1,6 +1,7 @@
 "use client"
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
 
 interface Props {
   user: { name: string; email: string }
@@ -102,6 +103,14 @@ const NAV_SETTINGS = [
 export default function SidebarClient({ user, restaurant }: Props) {
   const pathname = usePathname()
   const router   = useRouter()
+  const [logoUrl, setLogoUrl] = useState<string | null>(null)
+
+  useEffect(() => {
+    fetch('/api/settings')
+      .then(r => r.json())
+      .then(data => { if (data.success && data.logoUrl) setLogoUrl(data.logoUrl) })
+      .catch(() => {})
+  }, [])
 
   function active(href: string) {
     if (href === '/dashboard') return pathname === '/dashboard'
@@ -195,7 +204,23 @@ export default function SidebarClient({ user, restaurant }: Props) {
 
       {/* Logo */}
       <div style={{ padding:'24px 20px 18px', position:'relative', zIndex:1 }}>
-        <span className="sb-logo">WR</span>
+        {logoUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={logoUrl}
+            alt="logo"
+            style={{
+              width: 36,
+              height: 36,
+              borderRadius: 8,
+              objectFit: 'cover',
+              border: '1px solid rgba(255,255,255,0.1)',
+              display: 'block',
+            }}
+          />
+        ) : (
+          <span className="sb-logo">WR</span>
+        )}
       </div>
 
       {/* Restaurant card */}

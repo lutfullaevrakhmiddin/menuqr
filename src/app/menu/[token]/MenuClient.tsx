@@ -300,7 +300,21 @@ export default function MenuClient({ restaurant, table, categories }: Props) {
       <div className="menu-root">
         <header className="menu-header">
           <div className="header-main">
-            <span className="header-logo">🍽️</span>
+            {restaurant.logoUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={restaurant.logoUrl}
+                alt={restaurant.name}
+                style={{
+                  width: 42,
+                  height: 42,
+                  borderRadius: 10,
+                  objectFit: 'cover',
+                  border: '1px solid rgba(255,107,53,0.2)',
+                  flexShrink: 0,
+                }}
+              />
+            ) : null}
             <span className="header-name">{restaurant.name}</span>
             <span className="table-badge">🪑 {table.name}</span>
           </div>
