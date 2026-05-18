@@ -1,5 +1,5 @@
 # MenuQR — Project State
-Last updated: 2026-05-18 (session 4)
+Last updated: 2026-05-18 (session 5)
 
 ## Stack
 - Next.js 16.2.6, TypeScript, Prisma 7, Supabase PostgreSQL (Tokyo region)
@@ -27,7 +27,7 @@ src/
 │   │   ├── tables/page.tsx (tables & QR)
 │   │   ├── tables/new/page.tsx (add table)
 │   │   └── settings/page.tsx (restaurant info, logo, extras disabled)
-│   ├── api/auth/ (login, logout, register, me)
+│   ├── api/auth/ (login, logout, register, me, send-code, verify-code)
 │   ├── api/categories/ (GET, POST, PATCH?id=)
 │   ├── api/categories/[id]/ (PATCH, DELETE)
 │   ├── api/menu-items/ (GET, POST, [id]: GET, PUT, DELETE)
@@ -44,9 +44,10 @@ src/
     └── supabase.ts (supabaseAdmin — createClient with SUPABASE_SECRET_KEY)
 
 ## Database Models
-User, Restaurant, RestaurantUser, Category, MenuItem, Table (status: active/inactive), AnalyticsEvent
+User, Restaurant, RestaurantUser, Category, MenuItem, Table (status: active/inactive), AnalyticsEvent, EmailVerification
 - Table: @@unique([restaurantId, name]) — no duplicate names per restaurant
 - Category "Boshqa" auto-created on register
+- EmailVerification: email, code (6-digit), expiresAt (10 min), verified bool; deleted after register completes
 
 ## Completed Features
 ✅ Landing page
@@ -83,8 +84,16 @@ User, Restaurant, RestaurantUser, Category, MenuItem, Table (status: active/inac
    - Cookie-based deduplication: `scanned_{token}`, maxAge 1800s (30 min)
    - Server (page.tsx): reads cookie via cookies() from next/headers; skips analyticsEvent.create if present
    - Client (MenuClient.tsx): sets document.cookie on mount when scanToken prop is non-null
-✅ All features tested on Vercel production
+✅ Email verification on registration
+   - EmailVerification model (email, code, expiresAt, verified)
+   - POST /api/auth/send-code: checks email not taken, generates 6-digit code, sends via Resend (onboarding@resend.dev)
+   - POST /api/auth/verify-code: validates code, marks verified=true
+   - register/page.tsx: 3-step flow (email → code → account details), step-indicator dots, resend cooldown 30s
+   - register API now requires verified EmailVerification before creating User
+   - ⚠️ Needs custom domain for production Resend sender (currently uses onboarding@resend.dev free tier)
+✅ All features tested on Vercel production (pre-email-verification features)
 
 ## Next Steps
-1. Connect custom domain
-2. Restore IntersectionObserver for scroll tracking
+1. Connect custom domain (also unlocks custom Resend sender address)
+2. Add RESEND_API_KEY to Vercel environment variables
+3. Restore IntersectionObserver for scroll tracking
