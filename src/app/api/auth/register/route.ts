@@ -33,6 +33,18 @@ export async function POST(request: Request) {
       )
     }
 
+    const verification = await prisma.emailVerification.findFirst({
+      where: { email, verified: true },
+      orderBy: { createdAt: 'desc' },
+    })
+    if (!verification) {
+      return Response.json(
+        { success: false, error: 'Email tasdiqlanmagan' },
+        { status: 403 }
+      )
+    }
+    await prisma.emailVerification.deleteMany({ where: { email } })
+
     const passwordHash = await hashPassword(password)
 
     const slug = nanoid(10).toLowerCase()
