@@ -1,5 +1,5 @@
 # MenuQR — Project State
-Last updated: 2026-05-18 (session 3)
+Last updated: 2026-05-18 (session 4)
 
 ## Stack
 - Next.js 16.2.6, TypeScript, Prisma 7, Supabase PostgreSQL (Tokyo region)
@@ -34,6 +34,7 @@ src/
 │   ├── api/tables/ (GET, POST, [id]: PATCH, DELETE)
 │   ├── api/upload/ (POST — multipart, validates type+size, uploads to Supabase Storage)
 │   ├── api/settings/ (GET — name/logoUrl/description; PATCH — update + auto-delete old Storage file)
+│   ├── api/dashboard-stats/ (GET — todayScans, totalTables, totalMenuItems, totalCategories, monthlyScans)
 │   └── menu/[token]/ (public customer page: page.tsx + MenuClient.tsx)
 ├── components/
 │   └── ImageUpload.tsx ("use client" — URL tab + drag&drop upload tab, preview, clear)
@@ -74,13 +75,19 @@ User, Restaurant, RestaurantUser, Category, MenuItem, Table (status: active/inac
 ✅ Logo display
    - Sidebar: 36×36px logo image replaces "WR" initials when logoUrl set
    - Customer menu header: 42×42px logo when logoUrl set
+✅ Analytics dashboard — real data
+   - GET /api/dashboard-stats: todayScans, totalTables, totalMenuItems, totalCategories, monthlyScans
+   - dashboard/page.tsx fetches on mount, shows '...' while loading
+   - Welcome banner shows real todayScans count
+✅ Duplicate QR scan fix
+   - Cookie-based deduplication: `scanned_{token}`, maxAge 1800s (30 min)
+   - Server (page.tsx): reads cookie via cookies() from next/headers; skips analyticsEvent.create if present
+   - Client (MenuClient.tsx): sets document.cookie on mount when scanToken prop is non-null
+✅ All features tested on Vercel production
 
 ## Current Known Issues
-- IntersectionObserver removed during debugging (can restore after deploy)
-- Analytics: QR_SCAN saved to DB but dashboard shows hardcoded 0
+- IntersectionObserver removed during debugging (restore when convenient)
 
 ## Next Steps
-1. Analytics tuzatish — QR scan dashboard da 0 ko'rsatadi, real count kerak
-2. Deploy to Vercel (to'liq test)
-3. Connect custom domain
-4. Restore IntersectionObserver for scroll tracking
+1. Connect custom domain
+2. Restore IntersectionObserver for scroll tracking

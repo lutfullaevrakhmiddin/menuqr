@@ -397,7 +397,7 @@ export default function MenuClient({ restaurant, table, categories, scanToken }:
         </main>
 
         <footer className="menu-footer">
-          Powered by <span className="brand">MenuQR</span>
+          Powered by <span className="brand">WR</span>
         </footer>
       </div>
     </>
