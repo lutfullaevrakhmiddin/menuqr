@@ -22,7 +22,7 @@ export async function POST(request: Request) {
     await prisma.emailVerification.create({ data: { email, code, expiresAt } })
 
     await resend.emails.send({
-      from: 'MenuQR <onboarding@resend.dev>',
+      from: 'MenuQR <noreply@menustar.me>',
       to: email,
       subject: 'MenuQR — Tasdiqlash kodi',
       html: `
