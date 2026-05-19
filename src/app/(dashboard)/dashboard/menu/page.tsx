@@ -907,29 +907,30 @@ export default function MenuPage() {
                   >
                     {cat.name}
                   </span>
-                  <span className="cat-count">{catCount(cat.id)}</span>
-                  {/* Pencil: enter inline edit */}
-                  <button
-                    className="cat-edit-btn"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      startEditCat(cat);
-                    }}
-                    title="Tahrirlash"
-                  >
-                    <svg
-                      width="12"
-                      height="12"
-                      viewBox="0 0 12 12"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
+                  {/* Pencil: enter inline edit - only for non-"Boshqa" */}
+                  {cat.name !== "Boshqa" && (
+                    <button
+                      className="cat-edit-btn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        startEditCat(cat);
+                      }}
+                      title="Tahrirlash"
                     >
-                      <path d="M8.5 1.5a1.414 1.414 0 0 1 2 2L3.5 10.5 1 11l.5-2.5L8.5 1.5z" />
-                    </svg>
-                  </button>
+                      <svg
+                        width="12"
+                        height="12"
+                        viewBox="0 0 12 12"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M8.5 1.5a1.414 1.414 0 0 1 2 2L3.5 10.5 1 11l.5-2.5L8.5 1.5z" />
+                      </svg>
+                    </button>
+                  )}
                   {/* Trash: only for non-"Boshqa" categories */}
                   {cat.name !== "Boshqa" && (
                     <button
@@ -957,6 +958,7 @@ export default function MenuPage() {
                       </svg>
                     </button>
                   )}
+                  <span className="cat-count">{catCount(cat.id)}</span>
                 </div>
               )}
 
