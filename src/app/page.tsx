@@ -94,12 +94,12 @@ export default function Home() {
           <div className="hero-content" style={{position:"relative",zIndex:2,maxWidth:900}}>
             <div className="hero-tag" style={{display:"inline-flex",alignItems:"center",gap:8,fontSize:12,letterSpacing:".15em",textTransform:"uppercase",color:"#7c6bff",border:"1px solid rgba(124,107,255,0.3)",padding:"6px 16px",borderRadius:100,marginBottom:32}}>
               <span style={{width:6,height:6,background:"#7c6bff",borderRadius:"50%",animation:"pulse 2s infinite",display:"inline-block"}}/>
-              Restoran uchun raqamli yechim
+              Biznesingiz uchun raqamli yechim
             </div>
             <h1 className="hero-h1" style={{fontFamily:"var(--font-display),sans-serif",fontSize:"clamp(52px,8vw,110px)",fontWeight:700,lineHeight:.92,letterSpacing:"-4px",marginBottom:32}}>
               Jarayonni<br/>
-              <span style={{WebkitTextStroke:"1px rgba(240,238,255,0.25)",color:"transparent"}}>raqamlash</span>
-              <span style={{color:"#7c6bff"}}>tiring.</span>
+              <span style={{WebkitTextStroke:"1px rgba(240,238,255,0.25)",color:"transparent"}}>avtomatlash</span>
+              <span style={{color:"#7c6bff"}}>tiring</span>
             </h1>
             <p className="hero-desc" style={{fontSize:18,lineHeight:1.7,color:"rgba(240,238,255,0.45)",maxWidth:560,marginBottom:48,fontWeight:300}}>
               Mijozlaringiz QR kod orqali sekundda menyuni ko&apos;radi. Stol boshqaruvi, analitika va brendlash — hammasi bir platformada.
