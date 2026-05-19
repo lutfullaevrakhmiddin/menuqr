@@ -45,14 +45,35 @@ export default function Home() {
         .btn-ghost:hover{color:#f0eeff;border-color:rgba(255,255,255,0.2)}
         .stat-box{background:#0d0d1a;padding:32px 28px;transition:background .3s}
         .stat-box:hover{background:rgba(124,107,255,0.05)}
+        @media (max-width:768px){
+          .site-nav{padding:14px 20px !important}
+          .nav-links{display:none !important}
+          .hero-section{padding:80px 20px 60px !important;min-height:auto !important}
+          .hero-content{max-width:100% !important}
+          .hero-h1{letter-spacing:-2px !important}
+          .hero-actions{flex-direction:column !important;align-items:stretch !important}
+          .hero-actions .btn-primary,.hero-actions .btn-ghost{width:100% !important;justify-content:center !important;box-sizing:border-box}
+          .badge{display:none !important}
+          .hero-scroll{display:none !important}
+          #features{padding:60px 20px !important}
+          .feat-grid{grid-template-columns:1fr !important}
+          .feat-legend{flex-wrap:wrap !important}
+          #how{padding:60px 20px !important}
+          .steps-grid{grid-template-columns:1fr !important;gap:40px !important}
+          .step-box{padding:0 0 0 4px !important}
+          .stats-grid{grid-template-columns:repeat(2,1fr) !important;margin-top:40px !important}
+          .stat-box{padding:20px 16px !important}
+          .cta-section{padding:80px 20px !important}
+          .site-footer{flex-direction:column !important;gap:10px !important;padding:24px 20px !important;text-align:center !important}
+        }
       `}</style>
 
         {/* NAV */}
-        <nav style={{position:"sticky",top:0,zIndex:100,display:"flex",justifyContent:"space-between",alignItems:"center",padding:"20px 48px",background:"rgba(6,6,15,0.8)",backdropFilter:"blur(20px)",borderBottom:"1px solid rgba(255,255,255,0.08)"}}>
+        <nav className="site-nav" style={{position:"sticky",top:0,zIndex:100,display:"flex",justifyContent:"space-between",alignItems:"center",padding:"20px 48px",background:"rgba(6,6,15,0.8)",backdropFilter:"blur(20px)",borderBottom:"1px solid rgba(255,255,255,0.08)"}}>
           <div style={{fontFamily:"var(--font-display),sans-serif",fontSize:22,fontWeight:700,letterSpacing:"-0.5px"}}>
             W<span style={{color:"#7c6bff"}}>R</span>
           </div>
-          <div style={{display:"flex",gap:28}}>
+          <div className="nav-links" style={{display:"flex",gap:28}}>
             <Link href="#features" className="nav-link">Xususiyatlar</Link>
             <Link href="#how" className="nav-link">Qanday ishlaydi</Link>
             <Link href="#pricing" className="nav-link">Narxlar</Link>
@@ -63,14 +84,14 @@ export default function Home() {
         </nav>
 
         {/* HERO */}
-        <section style={{minHeight:"100vh",display:"flex",flexDirection:"column",justifyContent:"center",padding:"120px 48px 80px",position:"relative",overflow:"hidden"}}>
+        <section className="hero-section" style={{minHeight:"100vh",display:"flex",flexDirection:"column",justifyContent:"center",padding:"120px 48px 80px",position:"relative",overflow:"hidden"}}>
           <div className="grid-bg"/>
           <div className="grid-fade"/>
           <div className="orb orb-1"/>
           <div className="orb orb-2"/>
           <div className="orb orb-3"/>
 
-          <div style={{position:"relative",zIndex:2,maxWidth:900}}>
+          <div className="hero-content" style={{position:"relative",zIndex:2,maxWidth:900}}>
             <div className="hero-tag" style={{display:"inline-flex",alignItems:"center",gap:8,fontSize:12,letterSpacing:".15em",textTransform:"uppercase",color:"#7c6bff",border:"1px solid rgba(124,107,255,0.3)",padding:"6px 16px",borderRadius:100,marginBottom:32}}>
               <span style={{width:6,height:6,background:"#7c6bff",borderRadius:"50%",animation:"pulse 2s infinite",display:"inline-block"}}/>
               Restoran uchun raqamli yechim
@@ -106,7 +127,7 @@ export default function Home() {
             <div style={{fontFamily:"var(--font-display),sans-serif",fontSize:17,fontWeight:700,color:"#f0eeff",marginTop:4}}>Ishga tayyor</div>
           </div>
 
-          <div style={{position:"absolute",bottom:40,left:48,zIndex:2,display:"flex",alignItems:"center",gap:12,fontSize:12,letterSpacing:".1em",textTransform:"uppercase",color:"rgba(240,238,255,0.45)"}}>
+          <div className="hero-scroll" style={{position:"absolute",bottom:40,left:48,zIndex:2,display:"flex",alignItems:"center",gap:12,fontSize:12,letterSpacing:".1em",textTransform:"uppercase",color:"rgba(240,238,255,0.45)"}}>
             <div style={{width:40,height:1,background:"rgba(240,238,255,0.45)",animation:"scroll-pulse 2s infinite"}}/>
             Pastga aylantiring
           </div>
@@ -130,7 +151,7 @@ export default function Home() {
             Hozir ishlaydigan funksiyalar va yaqin kelajakda qo&apos;shiluvchilar
           </p>
 
-          <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>
+          <div className="feat-grid" style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>
             {[
               {icon:"qr",title:"QR kod generatsiya",desc:"Har bir stol uchun unikal — bepul",active:true},
               {icon:"🍽️",title:"Menyu boshqaruvi",desc:"Taomlar, narxlar, rasmlar",active:true},
@@ -162,7 +183,7 @@ export default function Home() {
             ))}
           </div>
 
-          <div style={{display:"flex",gap:24,marginTop:20,padding:"14px 16px",background:"rgba(255,255,255,0.02)",borderRadius:12,width:"fit-content"}}>
+          <div className="feat-legend" style={{display:"flex",gap:24,marginTop:20,padding:"14px 16px",background:"rgba(255,255,255,0.02)",borderRadius:12,width:"fit-content"}}>
             <div style={{display:"flex",alignItems:"center",gap:8,fontSize:12,color:"rgba(240,238,255,0.45)"}}>
               <span style={{width:8,height:8,borderRadius:"50%",background:"#7c6bff",display:"inline-block"}}/>
               Faol — hozir ishlaydi
@@ -183,7 +204,7 @@ export default function Home() {
           <h2 style={{fontFamily:"var(--font-display),sans-serif",fontSize:"clamp(36px,5vw,56px)",fontWeight:700,letterSpacing:"-2px",marginBottom:60,lineHeight:1.05}}>
             Tezda ishga tushing
           </h2>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:0}}>
+          <div className="steps-grid" style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:0}}>
             {[
               {n:"01",t:"Ro'yxatdan o'ting",d:"Email va restoran nomini kiriting. 3 daqiqa. Kredit karta kerak emas."},
               {n:"02",t:"Menyuni yarating",d:"Kategoriyalar va taomlarni qo'shing. Rasm va narxlarni belgilang."},
@@ -197,7 +218,7 @@ export default function Home() {
             ))}
           </div>
 
-          <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:1,background:"rgba(255,255,255,0.08)",marginTop:80,borderTop:"1px solid rgba(255,255,255,0.08)"}}>
+          <div className="stats-grid" style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:1,background:"rgba(255,255,255,0.08)",marginTop:80,borderTop:"1px solid rgba(255,255,255,0.08)"}}>
             {[
               {num:"Yuzdan ortiq",label:"Faol restoran"},
               {num:"Faol",label:"Oylik xizmatlar"},
@@ -213,7 +234,7 @@ export default function Home() {
         </section>
 
         {/* CTA */}
-        <section style={{padding:"120px 48px",textAlign:"center",position:"relative",overflow:"hidden",background:"#0d0d1a",borderTop:"1px solid rgba(255,255,255,0.08)"}}>
+        <section className="cta-section" style={{padding:"120px 48px",textAlign:"center",position:"relative",overflow:"hidden",background:"#0d0d1a",borderTop:"1px solid rgba(255,255,255,0.08)"}}>
           <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at center,rgba(124,107,255,0.1) 0%,transparent 70%)",pointerEvents:"none"}}/>
           <h2 style={{fontFamily:"var(--font-display),sans-serif",fontSize:"clamp(40px,5vw,72px)",fontWeight:700,letterSpacing:"-3px",marginBottom:20,lineHeight:.95,position:"relative",zIndex:1}}>
             Raqamli jarayondan<br/><span style={{color:"#7c6bff"}}>foydalaning</span>
@@ -237,7 +258,7 @@ export default function Home() {
         </section>
 
         {/* FOOTER */}
-        <footer style={{padding:"32px 48px",borderTop:"1px solid rgba(255,255,255,0.08)",display:"flex",justifyContent:"space-between",alignItems:"center",background:"#06060f"}}>
+        <footer className="site-footer" style={{padding:"32px 48px",borderTop:"1px solid rgba(255,255,255,0.08)",display:"flex",justifyContent:"space-between",alignItems:"center",background:"#06060f"}}>
           <div style={{fontFamily:"var(--font-display),sans-serif",fontSize:18,fontWeight:700}}>
             W<span style={{color:"#7c6bff"}}>R</span>
           </div>
