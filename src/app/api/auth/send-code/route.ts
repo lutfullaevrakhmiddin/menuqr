@@ -1,30 +1,32 @@
-import { prisma } from '@/lib/prisma'
-import { Resend } from 'resend'
+import { prisma } from "@/lib/prisma";
+import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: Request) {
   try {
-    const { email } = await request.json()
-    if (!email || typeof email !== 'string') {
-      return Response.json({ error: "Email kiritilmagan" }, { status: 400 })
+    const { email } = await request.json();
+    if (!email || typeof email !== "string") {
+      return Response.json({ error: "Email kiritilmagan" }, { status: 400 });
     }
 
-    const existing = await prisma.user.findUnique({ where: { email } })
+    const existing = await prisma.user.findUnique({ where: { email } });
     if (existing) {
-      return Response.json({ error: "Bu email allaqachon ro'yxatdan o'tgan" }, { status: 409 })
+      return Response.json(
+        { error: "Bu email allaqachon ro'yxatdan o'tgan" },
+        { status: 409 },
+      );
     }
 
-    const code = String(Math.floor(100000 + Math.random() * 900000))
-    const expiresAt = new Date(Date.now() + 10 * 60 * 1000)
+    const code = String(Math.floor(100000 + Math.random() * 900000));
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
 
-    await prisma.emailVerification.deleteMany({ where: { email } })
-    await prisma.emailVerification.create({ data: { email, code, expiresAt } })
-
-    await resend.emails.send({
-      from: 'MenuQR <noreply@menustar.me>',
+    await prisma.emailVerification.deleteMany({ where: { email } });
+    await prisma.emailVerification.create({ data: { email, code, expiresAt } });
+    const { error: resendError } = await resend.emails.send({
+      from: "MenuQR <noreply@menustar.me>",
       to: email,
-      subject: 'MenuQR — Tasdiqlash kodi',
+      subject: "MenuQR — Tasdiqlash kodi",
       html: `
 <!DOCTYPE html>
 <html>
@@ -53,11 +55,14 @@ export async function POST(request: Request) {
   </table>
 </body>
 </html>`,
-    })
-
-    return Response.json({ success: true })
+    });
+    if (resendError) {
+      console.error("[resend error]", resendError);
+      return Response.json({ error: "Email yuborishda xato" }, { status: 500 });
+    }
+    return Response.json({ success: true });
   } catch (error) {
-    console.error('[send-code]', error)
-    return Response.json({ error: 'Server xatosi' }, { status: 500 })
+    console.error("[send-code]", error);
+    return Response.json({ error: "Server xatosi" }, { status: 500 });
   }
 }
